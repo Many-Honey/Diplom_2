@@ -1,6 +1,7 @@
 import allure
 import requests
-from urls import URL_USER_LOGIN, URL_ORDER
+from data import Data
+from urls import URL_ORDER
 
 
 class TestGetUsersOrder:
@@ -18,4 +19,4 @@ class TestGetUsersOrder:
         response_get_order = requests.get(URL_ORDER)
         assert response_get_order.status_code == 401
         assert response_get_order.json()["success"] == False
-        assert response_get_order.json()["message"] == "You should be authorised"
+        assert response_get_order.json()["message"] == Data.not_authorized

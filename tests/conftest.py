@@ -22,8 +22,8 @@ def user_request_body(request_body):
     access_token = r.get("accessToken")
     headers = {"Authorization": f"Bearer{access_token}"}
     # удаляем созданного ранее пользователя
-    response_delete = requests.delete(URL_USER, headers=headers)
-    print(response_delete.text)
+    requests.delete(URL_USER, headers=headers)
+
 
 # фикстура регистрирует нового пользователя и удаляет созданного пользователя в конце теста
 @pytest.fixture
@@ -36,8 +36,7 @@ def user_registration(request_body):
     access_token = r.get("accessToken")
     headers = {"Authorization": f"Bearer{access_token}"}
     # удаляем созданного ранее пользователя
-    response_delete = requests.delete(URL_USER, headers=headers)
-    print(response_delete.text)
+    requests.delete(URL_USER, headers=headers)
 
 # фикстура возвращает тело запроса для создания нового пользователя
 @pytest.fixture
@@ -77,17 +76,14 @@ def order_request_body():
     return payload
 
 @pytest.fixture
-def login_user(request_body):
-    payload = request_body
-    requests.post(URL_USER_REGISTER, payload)
+def login_user(user_registration):
     payload_login = {
-        "email": request_body.get("email"),
-        "password": request_body.get("password")
+        "email": user_registration.get("email"),
+        "password": user_registration.get("password")
     }
     response_login = requests.post(URL_USER_LOGIN, data=payload_login)
     r = response_login.json()
     access_token = r.get("accessToken")
     headers = {"Authorization": f"Bearer{access_token}"}
     yield headers
-    response_delete = requests.delete(URL_USER, headers=headers)
-    print(response_delete.text)
+    requests.delete(URL_USER, headers=headers)

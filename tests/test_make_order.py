@@ -1,6 +1,7 @@
 import allure
 import requests
-from urls import URL_USER_LOGIN, URL_ORDER
+from data import Data
+from urls import URL_ORDER
 
 
 class TestMakeOrder:
@@ -22,15 +23,12 @@ class TestMakeOrder:
         response_order = requests.post(URL_ORDER, data=payload_order, headers=headers)
         assert response_order.status_code == 400
         assert response_order.json()["success"] == False
-        assert response_order.json()["message"] == "Ingredient ids must be provided"
+        assert response_order.json()["message"] == Data.no_ingredients
 
     @allure.title('Создание заказа с неверным хешем ингредиентов')
     def test_make_order_with_invalid_ingredients_authorized_user(self, login_user):
         headers = login_user
-        payload_order = {
-            "ingredients": [f'0000abcd1111abcd2222', '1111abcd2222abcd0000']
-        }
-        response_order = requests.post(URL_ORDER, data=payload_order, headers=headers)
+        response_order = requests.post(URL_ORDER, data=Data.payload_order, headers=headers)
         assert response_order.status_code == 500
 
     @allure.title('Создание заказа неавторизованным пользователем')
@@ -39,4 +37,4 @@ class TestMakeOrder:
         response_order = requests.post(URL_ORDER, data=payload_order)
         assert response_order.status_code == 401
         assert response_order.json()["success"] == False
-        assert response_order.json()["message"] == "You should be authorised"
+        assert response_order.json()["message"] == Data.not_authorized

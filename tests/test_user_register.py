@@ -1,15 +1,14 @@
 import allure
 import pytest
 import requests
+
+from data import Data
 from urls import URL_USER_REGISTER
 
 
 class TestUserRegister:
 
-    # сообщение при попытке регистрации уже зарегистрированного пользователя
-    message_1 = "User already exists"
-    # сообщение при попытке регистрации без заполнения одного из обязательных полей
-    message_2 = "Email, password and name are required fields"
+
 
     @allure.title('Создание уникального пользователя')
     def test_successful_user_registration(self, user_request_body):
@@ -30,7 +29,7 @@ class TestUserRegister:
         response_2 = requests.post(URL_USER_REGISTER, payload)
         assert response_2.status_code == 403
         assert response_2.json()["success"] == False
-        assert response_2.json()["message"] == self.message_1
+        assert response_2.json()["message"] == Data.user_exists
 
     @allure.title('Создание пользователя без указания обязательных полей')
     @pytest.mark.parametrize("required_field", ["email", "password", "name"])
@@ -40,7 +39,7 @@ class TestUserRegister:
         response = requests.post(URL_USER_REGISTER, payload)
         assert response.status_code == 403
         assert response.json()["success"] == False
-        assert response.json()["message"] == self.message_2
+        assert response.json()["message"] == Data.required_fields
 
 
 

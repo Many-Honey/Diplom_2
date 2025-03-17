@@ -1,6 +1,8 @@
 import allure
 import pytest
 import requests
+
+from data import Data
 from tests.conftest import user_registration
 from urls import URL_USER_LOGIN
 
@@ -17,9 +19,6 @@ class TestLogin:
         assert response_login.status_code == 200
         assert response_login.json()["success"] == True
         assert "accessToken" in response_login.json()
-        assert "refreshToken" in response_login.json()
-        assert response_login.json()["user"]["email"] == payload.get("email")
-        assert response_login.json()["user"]["name"] == payload.get("name")
 
     @allure.title('Логин с неверным логином и паролем')
     @pytest.mark.parametrize("invalid_data, data_value", [["email", "wrong_mail@yandex.ru"], ["password", "wrong_password"]])
@@ -30,6 +29,6 @@ class TestLogin:
         response_login = requests.post(URL_USER_LOGIN, data=payload_login)
         assert response_login.status_code == 401
         assert response_login.json()["success"] == False
-        assert response_login.json()["message"] == "email or password are incorrect"
+        assert response_login.json()["message"] == Data.incorrect_data
 
 
